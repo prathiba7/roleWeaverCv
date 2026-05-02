@@ -1,0 +1,31 @@
+{
+  "name": "roleweaver-cv",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=server & npm run dev --workspace=client",
+    "dev:client": "npm run dev --workspace=client",
+    "dev:server": "npm run dev --workspace=server",
+    "build": "npm run build --workspace=client",
+    "build:client": "npm run build --workspace=client",
+    "start": "npm run start --workspace=server",
+    "install:all": "npm install && npm install --workspace=client && npm install --workspace=server",
+    "vercel-build": "npm run build --workspace=client"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "description": "RoleWeaver CV - AI-powered resume tailoring application",
+  "keywords": [
+    "resume",
+    "cv",
+    "ai",
+    "tailoring"
+  ],
+  "author": "",
+  "license": "ISC"
+}
