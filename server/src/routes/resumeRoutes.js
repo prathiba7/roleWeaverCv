@@ -55,4 +55,18 @@ router.patch('/:id/photo', auth, async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// Save edited tailored version
+router.patch('/:id/version/:versionId', auth, async (req, res, next) => {
+  try {
+    const resume = await Resume.findOne({ _id: req.params.id, userId: req.user.id });
+    if (!resume) return res.status(404).json({ message: 'Resume not found' });
+    const version = resume.tailoredVersions.id(req.params.versionId);
+    if (!version) return res.status(404).json({ message: 'Version not found' });
+    version.tailored = req.body.tailored;
+    resume.markModified('tailoredVersions');
+    await resume.save();
+    res.json({ message: 'Saved', tailored: version.tailored });
+  } catch (err) { next(err); }
+});
+
 module.exports = router;

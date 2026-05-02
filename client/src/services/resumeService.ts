@@ -1,5 +1,5 @@
 import api from './api';
-import type { Resume, TailorResult } from '../types';
+import type { Resume, TailorResult, ParsedResume } from '../types';
 
 export const uploadResume = async (file: File): Promise<Resume> => {
   const form = new FormData();
@@ -22,6 +22,24 @@ export const getResume = async (id: string): Promise<Resume> => {
 
 export const deleteResume = async (id: string): Promise<void> => {
   await api.delete(`/resumes/${id}`);
+};
+
+export const saveTailoredVersion = async (
+  resumeId: string,
+  versionId: string,
+  tailored: ParsedResume
+): Promise<void> => {
+  await api.patch(`/resumes/${resumeId}/version/${versionId}`, { tailored });
+};
+
+export const reTailorResume = async (payload: {
+  resumeId: string;
+  baseResume: ParsedResume;
+  jobDescriptionText: string;
+  companyType: string;
+}): Promise<TailorResult> => {
+  const { data } = await api.post<TailorResult>('/tailor/retailor', payload);
+  return data;
 };
 
 export const tailorResume = async (payload: {

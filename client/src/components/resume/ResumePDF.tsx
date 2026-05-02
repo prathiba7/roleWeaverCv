@@ -1,145 +1,158 @@
-import { Document, Page, Text, View, StyleSheet, Link, Image } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import type { ParsedResume } from '../../types';
 
-const BLUE = '#1e3a5f';
-const ACCENT = '#2563eb';
-const LIGHT_BG = '#eef2f7';
-const WHITE = '#ffffff';
-const GRAY = '#4b5563';
 const DARK = '#111827';
+const GRAY = '#4b5563';
+const LIGHT_GRAY = '#9ca3af';
+const ACCENT = '#1d4ed8';
+const DIVIDER = '#e5e7eb';
+const WHITE = '#ffffff';
 
-// Sections handled explicitly — everything else rendered as dynamic
 const KNOWN_SECTIONS = new Set([
   'name','email','phone','location','linkedin','github','photo',
   'summary','experience','education','skills','certifications',
 ]);
 
-const styles = StyleSheet.create({
-  page: { flexDirection: 'row', fontFamily: 'Helvetica', fontSize: 9, backgroundColor: WHITE },
-  left: { width: '35%', backgroundColor: BLUE, padding: 20, minHeight: '100%' },
-  photoWrapper: { alignItems: 'center', marginBottom: 14 },
-  photo: { width: 80, height: 80, borderRadius: 40, borderWidth: 2, borderColor: WHITE },
-  photoPlaceholder: {
-    width: 80, height: 80, borderRadius: 40, borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.3)', backgroundColor: 'rgba(255,255,255,0.1)',
-    alignItems: 'center', justifyContent: 'center',
+const s = StyleSheet.create({
+  page: {
+    fontFamily: 'Helvetica',
+    fontSize: 9.5,
+    color: DARK,
+    backgroundColor: WHITE,
+    paddingTop: 40,
+    paddingBottom: 40,
+    paddingHorizontal: 48,
   },
-  photoInitial: { color: WHITE, fontSize: 28, fontFamily: 'Helvetica-Bold' },
-  leftName: { color: WHITE, fontSize: 15, fontFamily: 'Helvetica-Bold', textAlign: 'center', marginBottom: 2 },
-  leftTitle: { color: 'rgba(255,255,255,0.7)', fontSize: 8, textAlign: 'center', marginBottom: 14 },
-  leftSection: { marginBottom: 14 },
-  leftSectionTitle: {
-    color: WHITE, fontSize: 8, fontFamily: 'Helvetica-Bold',
-    textTransform: 'uppercase', letterSpacing: 1.5,
-    borderBottomWidth: 0.5, borderBottomColor: 'rgba(255,255,255,0.3)',
-    paddingBottom: 3, marginBottom: 6,
-  },
-  contactItem: { color: 'rgba(255,255,255,0.85)', fontSize: 8, marginBottom: 3 },
-  skillBadge: {
-    backgroundColor: 'rgba(255,255,255,0.12)', color: WHITE,
-    fontSize: 7.5, paddingHorizontal: 6, paddingVertical: 2.5,
-    borderRadius: 3, marginBottom: 3, marginRight: 3,
-  },
-  skillsWrap: { flexDirection: 'row', flexWrap: 'wrap' },
-  certItem: { marginBottom: 5 },
-  certName: { color: WHITE, fontSize: 8, fontFamily: 'Helvetica-Bold' },
-  certMeta: { color: 'rgba(255,255,255,0.6)', fontSize: 7.5 },
-  right: { width: '65%', padding: 22 },
-  rightSection: { marginBottom: 14 },
+
+  // ── Header ──────────────────────────────────────────────
+  headerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
+  photo: { width: 64, height: 64, borderRadius: 32, marginRight: 16 },
+  headerText: { flex: 1 },
+  name: { fontSize: 22, fontFamily: 'Helvetica-Bold', color: DARK, marginBottom: 2 },
+  jobTitle: { fontSize: 10, color: ACCENT, marginBottom: 4 },
+  contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  contactItem: { fontSize: 8, color: GRAY },
+
+  divider: { borderBottomWidth: 1, borderBottomColor: DIVIDER, marginBottom: 10 },
+
+  // ── Section ──────────────────────────────────────────────
+  section: { marginBottom: 12 },
   sectionTitle: {
-    fontSize: 9, fontFamily: 'Helvetica-Bold', color: ACCENT,
-    textTransform: 'uppercase', letterSpacing: 1.2,
-    borderBottomWidth: 1, borderBottomColor: LIGHT_BG,
-    paddingBottom: 3, marginBottom: 7,
+    fontSize: 8.5,
+    fontFamily: 'Helvetica-Bold',
+    color: ACCENT,
+    textTransform: 'uppercase',
+    letterSpacing: 1.4,
+    borderBottomWidth: 1,
+    borderBottomColor: ACCENT,
+    paddingBottom: 2,
+    marginBottom: 6,
   },
-  summary: { fontSize: 8.5, color: GRAY, lineHeight: 1.55 },
-  expBlock: { marginBottom: 9 },
-  expHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 1 },
-  expTitle: { fontSize: 9.5, fontFamily: 'Helvetica-Bold', color: DARK },
-  expCompany: { fontSize: 8.5, color: ACCENT },
-  expDuration: { fontSize: 7.5, color: GRAY, backgroundColor: LIGHT_BG, paddingHorizontal: 5, paddingVertical: 1.5, borderRadius: 2 },
-  bullet: { flexDirection: 'row', marginTop: 2.5, paddingLeft: 2 },
-  bulletDot: { fontSize: 8, color: ACCENT, marginRight: 4, marginTop: 0.5 },
-  bulletText: { fontSize: 8.5, color: GRAY, lineHeight: 1.45, flex: 1 },
-  bulletBold: { fontSize: 8.5, color: DARK, fontFamily: 'Helvetica-Bold' },
-  eduBlock: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 },
-  eduDegree: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: DARK },
-  eduInstitution: { fontSize: 8, color: GRAY, marginTop: 1 },
-  eduYear: { fontSize: 8, color: GRAY },
+
+  // ── Summary ──────────────────────────────────────────────
+  summary: { fontSize: 9, color: GRAY, lineHeight: 1.6 },
+
+  // ── Experience ───────────────────────────────────────────
+  expBlock: { marginBottom: 8 },
+  expHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  expLeft: { flex: 1 },
+  expTitle: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: DARK },
+  expCompany: { fontSize: 9, color: ACCENT, marginTop: 1 },
+  expDuration: { fontSize: 8, color: LIGHT_GRAY, marginTop: 1 },
+  bullet: { flexDirection: 'row', marginTop: 3, paddingLeft: 4 },
+  bulletDot: { fontSize: 9, color: ACCENT, marginRight: 5, marginTop: 0.5 },
+  bulletText: { fontSize: 9, color: GRAY, lineHeight: 1.5, flex: 1 },
+  bulletBold: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: DARK },
+
+  // ── Skills ───────────────────────────────────────────────
+  skillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },
+  skill: {
+    fontSize: 8.5, color: ACCENT,
+    borderWidth: 0.5, borderColor: ACCENT,
+    paddingHorizontal: 6, paddingVertical: 2,
+    borderRadius: 3,
+  },
+  skillBold: {
+    fontSize: 8.5, fontFamily: 'Helvetica-Bold',
+    color: WHITE, backgroundColor: ACCENT,
+    paddingHorizontal: 6, paddingVertical: 2,
+    borderRadius: 3,
+  },
+
+  // ── Education ────────────────────────────────────────────
+  eduRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
+  eduDegree: { fontSize: 9.5, fontFamily: 'Helvetica-Bold', color: DARK },
+  eduInstitution: { fontSize: 8.5, color: GRAY, marginTop: 1 },
+  eduYear: { fontSize: 8.5, color: LIGHT_GRAY },
+
+  // ── Certifications ───────────────────────────────────────
+  certRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
+  certName: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: DARK },
+  certMeta: { fontSize: 8, color: LIGHT_GRAY },
+
+  // ── Dynamic sections ─────────────────────────────────────
   dynamicItem: { flexDirection: 'row', marginBottom: 3 },
-  dynamicDot: { fontSize: 8, color: ACCENT, marginRight: 4 },
-  dynamicText: { fontSize: 8.5, color: GRAY, flex: 1, lineHeight: 1.45 },
-  dynamicBold: { fontSize: 8.5, color: DARK, fontFamily: 'Helvetica-Bold' },
-  dynamicSubtitle: { fontSize: 8.5, fontFamily: 'Helvetica-Bold', color: DARK, marginBottom: 1 },
-  dynamicMeta: { fontSize: 8, color: GRAY, marginBottom: 3 },
+  dynamicDot: { fontSize: 9, color: ACCENT, marginRight: 5 },
+  dynamicText: { fontSize: 9, color: GRAY, flex: 1, lineHeight: 1.5 },
+  dynamicTitle: { fontSize: 9.5, fontFamily: 'Helvetica-Bold', color: DARK, marginBottom: 1 },
+  dynamicMeta: { fontSize: 8, color: LIGHT_GRAY, marginBottom: 2 },
 });
 
-const BoldKeywords = ({ text, keywords }: { text: string; keywords: string[] }) => {
-  if (!keywords.length || !text) return <Text style={styles.bulletText}>{text}</Text>;
+// Bold matched keywords inside any text
+const BoldText = ({ text, keywords, style }: { text: string; keywords: string[]; style?: object }) => {
+  if (!keywords.length || !text) return <Text style={style || s.bulletText}>{text}</Text>;
   const escaped = keywords.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
   const regex = new RegExp(`(${escaped.join('|')})`, 'gi');
   const parts = text.split(regex);
   return (
-    <Text style={styles.bulletText}>
+    <Text style={style || s.bulletText}>
       {parts.map((part, i) =>
         regex.test(part)
-          ? <Text key={i} style={styles.bulletBold}>{part}</Text>
+          ? <Text key={i} style={s.bulletBold}>{part}</Text>
           : <Text key={i}>{part}</Text>
       )}
     </Text>
   );
 };
 
-// Renders any unknown section dynamically
+const SectionTitle = ({ children }: { children: string }) => (
+  <Text style={s.sectionTitle}>{children}</Text>
+);
+
 const DynamicSection = ({ label, value, keywords }: { label: string; value: unknown; keywords: string[] }) => {
+  if (!value || (Array.isArray(value) && value.length === 0)) return null;
   const title = label.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
-  if (!value || (Array.isArray(value) && value.length === 0)) return null;
-
   return (
-    <View style={styles.rightSection}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      {Array.isArray(value) ? (
-        value.map((item: unknown, i: number) => {
-          if (typeof item === 'string') {
-            return (
-              <View key={i} style={styles.dynamicItem}>
-                <Text style={styles.dynamicDot}>▸</Text>
-                <BoldKeywords text={item} keywords={keywords} />
-              </View>
-            );
-          }
-          if (typeof item === 'object' && item !== null) {
-            const obj = item as Record<string, unknown>;
-            // { text } format
-            if (obj.text) return (
-              <View key={i} style={styles.dynamicItem}>
-                <Text style={styles.dynamicDot}>▸</Text>
-                <BoldKeywords text={String(obj.text)} keywords={keywords} />
-              </View>
-            );
-            // { title/name, description/summary, ... } format
-            const titleVal = obj.title || obj.name || obj.role || '';
-            const descVal = obj.description || obj.summary || obj.details || obj.url || '';
-            const metaVal = [obj.organization, obj.publisher, obj.date, obj.year].filter(Boolean).join(' · ');
-            return (
-              <View key={i} style={{ marginBottom: 5 }}>
-                {titleVal ? <Text style={styles.dynamicSubtitle}>{String(titleVal)}</Text> : null}
-                {metaVal ? <Text style={styles.dynamicMeta}>{metaVal}</Text> : null}
-                {descVal ? (
-                  <View style={styles.dynamicItem}>
-                    <Text style={styles.dynamicDot}>▸</Text>
-                    <BoldKeywords text={String(descVal)} keywords={keywords} />
-                  </View>
-                ) : null}
-              </View>
-            );
-          }
-          return null;
-        })
-      ) : (
-        <Text style={styles.dynamicText}>{String(value)}</Text>
-      )}
+    <View style={s.section}>
+      <SectionTitle>{title}</SectionTitle>
+      {Array.isArray(value) ? value.map((item: unknown, i: number) => {
+        if (typeof item === 'string') return (
+          <View key={i} style={s.dynamicItem}>
+            <Text style={s.dynamicDot}>•</Text>
+            <BoldText text={item} keywords={keywords} style={s.dynamicText} />
+          </View>
+        );
+        if (typeof item === 'object' && item !== null) {
+          const obj = item as Record<string, unknown>;
+          const text = String(obj.text || obj.description || obj.summary || obj.details || '');
+          const titleVal = String(obj.title || obj.name || obj.role || '');
+          const meta = [obj.organization, obj.publisher, obj.issuer, obj.date, obj.year].filter(Boolean).join(' · ');
+          return (
+            <View key={i} style={{ marginBottom: 5 }}>
+              {titleVal ? <Text style={s.dynamicTitle}>{titleVal}</Text> : null}
+              {meta ? <Text style={s.dynamicMeta}>{meta}</Text> : null}
+              {text ? (
+                <View style={s.dynamicItem}>
+                  <Text style={s.dynamicDot}>•</Text>
+                  <BoldText text={text} keywords={keywords} style={s.dynamicText} />
+                </View>
+              ) : null}
+            </View>
+          );
+        }
+        return null;
+      }) : <Text style={s.dynamicText}>{String(value)}</Text>}
     </View>
   );
 };
@@ -150,119 +163,115 @@ interface ResumePDFProps {
 }
 
 export const ResumePDF = ({ data, keywords = [] }: ResumePDFProps) => {
-  const initials = data.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() || '?';
   const jobTitle = data.experience?.[0]?.title || '';
-
-  // Collect all dynamic sections not handled explicitly
   const dynamicSections = Object.entries(data).filter(
-    ([key]) => !KNOWN_SECTIONS.has(key) && key !== 'summary' && key !== 'experience' && key !== 'education' && key !== 'skills' && key !== 'certifications'
+    ([key]) => !KNOWN_SECTIONS.has(key) && !['summary','experience','education','skills','certifications'].includes(key)
   );
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
-        {/* LEFT COLUMN */}
-        <View style={styles.left}>
-          <View style={styles.photoWrapper}>
-            {data.photo ? (
-              <Image src={data.photo} style={styles.photo} />
-            ) : (
-              <View style={styles.photoPlaceholder}>
-                <Text style={styles.photoInitial}>{initials}</Text>
-              </View>
-            )}
+      <Page size="A4" style={s.page}>
+
+        {/* ── HEADER ── */}
+        <View style={s.headerRow}>
+          {data.photo && <Image src={data.photo} style={s.photo} />}
+          <View style={s.headerText}>
+            <Text style={s.name}>{data.name}</Text>
+            {jobTitle ? <Text style={s.jobTitle}>{jobTitle}</Text> : null}
+            <View style={s.contactRow}>
+              {data.email    && <Text style={s.contactItem}>{data.email}</Text>}
+              {data.phone    && <Text style={s.contactItem}>| {data.phone}</Text>}
+              {data.location && <Text style={s.contactItem}>| {data.location}</Text>}
+              {data.linkedin && <Text style={s.contactItem}>| {String(data.linkedin).replace('https://','')}</Text>}
+              {data.github   && <Text style={s.contactItem}>| {String(data.github).replace('https://','')}</Text>}
+            </View>
           </View>
+        </View>
 
-          <Text style={styles.leftName}>{data.name}</Text>
-          {jobTitle ? <Text style={styles.leftTitle}>{jobTitle}</Text> : null}
+        <View style={s.divider} />
 
-          <View style={styles.leftSection}>
-            <Text style={styles.leftSectionTitle}>Contact</Text>
-            {data.email && <Text style={styles.contactItem}>✉  {data.email}</Text>}
-            {data.phone && <Text style={styles.contactItem}>✆  {data.phone}</Text>}
-            {data.location && <Text style={styles.contactItem}>⌖  {data.location}</Text>}
-            {data.linkedin && <Text style={styles.contactItem}>in  {String(data.linkedin).replace('https://', '')}</Text>}
-            {data.github && <Text style={styles.contactItem}>⌥  {String(data.github).replace('https://', '')}</Text>}
+        {/* ── SUMMARY ── */}
+        {data.summary && (
+          <View style={s.section}>
+            <SectionTitle>Professional Summary</SectionTitle>
+            <BoldText text={data.summary} keywords={keywords} style={s.summary} />
           </View>
+        )}
 
-          {data.skills?.length > 0 && (
-            <View style={styles.leftSection}>
-              <Text style={styles.leftSectionTitle}>Skills</Text>
-              <View style={styles.skillsWrap}>
-                {data.skills.map((skill, i) => (
-                  <Text key={i} style={styles.skillBadge}>{skill}</Text>
+        {/* ── EXPERIENCE ── */}
+        {data.experience?.length > 0 && (
+          <View style={s.section}>
+            <SectionTitle>Experience</SectionTitle>
+            {data.experience.map((exp, i) => (
+              <View key={i} style={s.expBlock}>
+                <View style={s.expHeader}>
+                  <View style={s.expLeft}>
+                    <Text style={s.expTitle}>{exp.title}</Text>
+                    <Text style={s.expCompany}>{exp.company}{exp.location ? ` · ${exp.location}` : ''}</Text>
+                  </View>
+                  <Text style={s.expDuration}>{exp.duration}</Text>
+                </View>
+                {exp.bullets?.map((b, j) => (
+                  <View key={j} style={s.bullet}>
+                    <Text style={s.bulletDot}>•</Text>
+                    <BoldText text={b.text} keywords={keywords} />
+                  </View>
                 ))}
               </View>
-            </View>
-          )}
+            ))}
+          </View>
+        )}
 
-          {data.certifications?.length > 0 && (
-            <View style={styles.leftSection}>
-              <Text style={styles.leftSectionTitle}>Certifications</Text>
-              {data.certifications.map((cert, i) => (
-                <View key={i} style={styles.certItem}>
-                  <Text style={styles.certName}>{cert.name}</Text>
-                  {(cert.issuer || cert.year) && (
-                    <Text style={styles.certMeta}>{[cert.issuer, cert.year].filter(Boolean).join(' · ')}</Text>
-                  )}
+        {/* ── DYNAMIC SECTIONS (accomplishments, publications, projects, awards…) ── */}
+        {dynamicSections.map(([key, value]) => (
+          <DynamicSection key={key} label={key} value={value} keywords={keywords} />
+        ))}
+
+        {/* ── SKILLS ── */}
+        {data.skills?.length > 0 && (
+          <View style={s.section}>
+            <SectionTitle>Skills</SectionTitle>
+            <View style={s.skillsRow}>
+              {data.skills.map((skill, i) => {
+                const isMatch = keywords.some((k) => k.toLowerCase() === skill.toLowerCase());
+                return <Text key={i} style={isMatch ? s.skillBold : s.skill}>{skill}</Text>;
+              })}
+            </View>
+          </View>
+        )}
+
+        {/* ── CERTIFICATIONS ── */}
+        {data.certifications?.length > 0 && (
+          <View style={s.section}>
+            <SectionTitle>Certifications</SectionTitle>
+            {data.certifications.map((cert, i) => (
+              <View key={i} style={s.certRow}>
+                <View>
+                  <Text style={s.certName}>{cert.name}</Text>
+                  {cert.issuer && <Text style={s.certMeta}>{cert.issuer}</Text>}
                 </View>
-              ))}
-            </View>
-          )}
-        </View>
+                {cert.year && <Text style={s.certMeta}>{cert.year}</Text>}
+              </View>
+            ))}
+          </View>
+        )}
 
-        {/* RIGHT COLUMN */}
-        <View style={styles.right}>
-          {data.summary && (
-            <View style={styles.rightSection}>
-              <Text style={styles.sectionTitle}>Professional Summary</Text>
-              <Text style={styles.summary}>{data.summary}</Text>
-            </View>
-          )}
-
-          {data.experience?.length > 0 && (
-            <View style={styles.rightSection}>
-              <Text style={styles.sectionTitle}>Experience</Text>
-              {data.experience.map((exp, i) => (
-                <View key={i} style={styles.expBlock}>
-                  <View style={styles.expHeader}>
-                    <View>
-                      <Text style={styles.expTitle}>{exp.title}</Text>
-                      <Text style={styles.expCompany}>{exp.company}{exp.location ? ` · ${exp.location}` : ''}</Text>
-                    </View>
-                    <Text style={styles.expDuration}>{exp.duration}</Text>
-                  </View>
-                  {exp.bullets?.map((b, j) => (
-                    <View key={j} style={styles.bullet}>
-                      <Text style={styles.bulletDot}>▸</Text>
-                      <BoldKeywords text={b.text} keywords={keywords} />
-                    </View>
-                  ))}
+        {/* ── EDUCATION ── */}
+        {data.education?.length > 0 && (
+          <View style={s.section}>
+            <SectionTitle>Education</SectionTitle>
+            {data.education.map((edu, i) => (
+              <View key={i} style={s.eduRow}>
+                <View>
+                  <Text style={s.eduDegree}>{edu.degree}{edu.field ? ` in ${edu.field}` : ''}</Text>
+                  <Text style={s.eduInstitution}>{edu.institution}</Text>
                 </View>
-              ))}
-            </View>
-          )}
+                <Text style={s.eduYear}>{edu.year}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
-          {/* All dynamic sections: accomplishments, publications, projects, awards, etc. */}
-          {dynamicSections.map(([key, value]) => (
-            <DynamicSection key={key} label={key} value={value} keywords={keywords} />
-          ))}
-
-          {data.education?.length > 0 && (
-            <View style={styles.rightSection}>
-              <Text style={styles.sectionTitle}>Education</Text>
-              {data.education.map((edu, i) => (
-                <View key={i} style={styles.eduBlock}>
-                  <View>
-                    <Text style={styles.eduDegree}>{edu.degree}{edu.field ? ` in ${edu.field}` : ''}</Text>
-                    <Text style={styles.eduInstitution}>{edu.institution}</Text>
-                  </View>
-                  <Text style={styles.eduYear}>{edu.year}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-        </View>
       </Page>
     </Document>
   );
