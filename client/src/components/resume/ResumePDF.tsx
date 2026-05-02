@@ -1,5 +1,4 @@
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
-import type { Styles } from '@react-pdf/renderer';
 import type { ParsedResume } from '../../types';
 
 const DARK = '#111827';
@@ -242,10 +241,10 @@ export const ResumePDF = ({ data, keywords = [] }: ResumePDFProps) => {
         )}
 
         {/* ── CERTIFICATIONS ── */}
-        {data.certifications?.length > 0 && (
+        {data.certifications && data.certifications.length > 0 && (
           <View style={s.section}>
             <SectionTitle>Certifications</SectionTitle>
-            {data.certifications.map((cert, i) => (
+            {data.certifications?.map((cert, i) => (
               <View key={i} style={s.certRow}>
                 <View>
                   <Text style={s.certName}>{cert.name}</Text>

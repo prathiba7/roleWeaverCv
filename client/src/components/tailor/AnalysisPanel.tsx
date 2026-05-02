@@ -44,7 +44,6 @@ const Section = ({ icon: Icon, title, color, children }: {
 
 export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
   const scoreColor = analysis.atsScore >= 70 ? 'text-green-400' : analysis.atsScore >= 40 ? 'text-yellow-400' : 'text-red-400';
-  const scoreBg = analysis.atsScore >= 70 ? 'bg-green-900/30' : analysis.atsScore >= 40 ? 'bg-yellow-900/30' : 'bg-red-900/30';
 
   return (
     <div className="space-y-4">

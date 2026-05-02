@@ -58,11 +58,11 @@ const DynamicSection = ({ label, value, keywords }: { label: string; value: unkn
       const meta = [obj.organization, obj.publisher, obj.issuer, obj.date, obj.year].filter(Boolean).join(' · ');
       return (
         <li key={i} className="mb-2">
-          {titleVal && <p className="text-[#e6edf3] font-semibold text-xs">{String(titleVal)}</p>}
-          {meta && <p className="text-brand-400 text-xs">{meta}</p>}
-          {text && (
+          {titleVal ? <p className="text-[#e6edf3] font-semibold text-xs">{String(titleVal)}</p> : null}
+          {meta ? <p className="text-brand-400 text-xs">{String(meta)}</p> : null}
+          {text ? (
             <p className="text-[#8b949e] text-xs mt-0.5">{highlight(String(text), keywords)}</p>
-          )}
+          ) : null}
         </li>
       );
     }
@@ -172,10 +172,10 @@ export const ResumePreview = ({ data, highlightKeywords = [], label, labelColor 
         )}
 
         {/* Certifications */}
-        {data.certifications?.length > 0 && (
+        {data.certifications && data.certifications.length > 0 && (
           <div>
             <SectionTitle>Certifications</SectionTitle>
-            {data.certifications.map((cert, i) => (
+            {data.certifications?.map((cert, i) => (
               <div key={i} className="mb-2">
                 <p className="text-[#e6edf3] font-semibold text-xs">{highlight(cert.name, highlightKeywords)}</p>
                 {(cert.issuer || cert.year) && (

@@ -121,7 +121,6 @@ export const Tailor = () => {
         jobDescriptionText: jd,
         companyType,
       });
-      const prevScore = result.analysis?.atsScore ?? 0;
       setResult(res);
       setEditedResume(res.tailored);
       setScoreHistory((prev) => [...prev, res.analysis?.atsScore ?? 0]);

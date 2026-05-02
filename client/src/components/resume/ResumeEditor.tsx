@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
-import type { ParsedResume, Experience, Education, Certification } from '../../types';
+import type { ParsedResume } from '../../types';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
 
 interface ResumeEditorProps {
