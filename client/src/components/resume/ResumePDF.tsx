@@ -1,4 +1,5 @@
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import type { Styles } from '@react-pdf/renderer';
 import type { ParsedResume } from '../../types';
 
 const DARK = '#111827';
@@ -16,90 +17,90 @@ const KNOWN_SECTIONS = new Set([
 const s = StyleSheet.create({
   page: {
     fontFamily: 'Helvetica',
-    fontSize: 9.5,
+    fontSize: 8.5,
     color: DARK,
     backgroundColor: WHITE,
-    paddingTop: 40,
-    paddingBottom: 40,
-    paddingHorizontal: 48,
+    paddingTop: 30,
+    paddingBottom: 30,
+    paddingHorizontal: 40,
   },
 
   // ── Header ──────────────────────────────────────────────
-  headerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
-  photo: { width: 64, height: 64, borderRadius: 32, marginRight: 16 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  photo: { width: 50, height: 50, borderRadius: 25, marginRight: 12 },
   headerText: { flex: 1 },
-  name: { fontSize: 22, fontFamily: 'Helvetica-Bold', color: DARK, marginBottom: 2 },
-  jobTitle: { fontSize: 10, color: ACCENT, marginBottom: 4 },
-  contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  contactItem: { fontSize: 8, color: GRAY },
+  name: { fontSize: 18, fontFamily: 'Helvetica-Bold', color: DARK, marginBottom: 1 },
+  jobTitle: { fontSize: 9, color: ACCENT, marginBottom: 3 },
+  contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  contactItem: { fontSize: 7.5, color: GRAY },
 
-  divider: { borderBottomWidth: 1, borderBottomColor: DIVIDER, marginBottom: 10 },
+  divider: { borderBottomWidth: 1, borderBottomColor: DIVIDER, marginBottom: 8 },
 
   // ── Section ──────────────────────────────────────────────
-  section: { marginBottom: 12 },
+  section: { marginBottom: 9 },
   sectionTitle: {
-    fontSize: 8.5,
+    fontSize: 8,
     fontFamily: 'Helvetica-Bold',
     color: ACCENT,
     textTransform: 'uppercase',
-    letterSpacing: 1.4,
+    letterSpacing: 1.2,
     borderBottomWidth: 1,
     borderBottomColor: ACCENT,
-    paddingBottom: 2,
-    marginBottom: 6,
+    paddingBottom: 1.5,
+    marginBottom: 5,
   },
 
   // ── Summary ──────────────────────────────────────────────
-  summary: { fontSize: 9, color: GRAY, lineHeight: 1.6 },
+  summary: { fontSize: 8, color: GRAY, lineHeight: 1.4 },
 
   // ── Experience ───────────────────────────────────────────
-  expBlock: { marginBottom: 8 },
+  expBlock: { marginBottom: 6 },
   expHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   expLeft: { flex: 1 },
-  expTitle: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: DARK },
-  expCompany: { fontSize: 9, color: ACCENT, marginTop: 1 },
-  expDuration: { fontSize: 8, color: LIGHT_GRAY, marginTop: 1 },
-  bullet: { flexDirection: 'row', marginTop: 3, paddingLeft: 4 },
-  bulletDot: { fontSize: 9, color: ACCENT, marginRight: 5, marginTop: 0.5 },
-  bulletText: { fontSize: 9, color: GRAY, lineHeight: 1.5, flex: 1 },
-  bulletBold: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: DARK },
+  expTitle: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: DARK },
+  expCompany: { fontSize: 8, color: ACCENT, marginTop: 0.5 },
+  expDuration: { fontSize: 7.5, color: LIGHT_GRAY, marginTop: 0.5 },
+  bullet: { flexDirection: 'row', marginTop: 2, paddingLeft: 3 },
+  bulletDot: { fontSize: 8, color: ACCENT, marginRight: 4, marginTop: 0.5 },
+  bulletText: { fontSize: 8, color: GRAY, lineHeight: 1.3, flex: 1 },
+  bulletBold: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: DARK },
 
   // ── Skills ───────────────────────────────────────────────
-  skillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },
+  skillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
   skill: {
-    fontSize: 8.5, color: ACCENT,
+    fontSize: 7.5, color: ACCENT,
     borderWidth: 0.5, borderColor: ACCENT,
-    paddingHorizontal: 6, paddingVertical: 2,
-    borderRadius: 3,
+    paddingHorizontal: 5, paddingVertical: 1.5,
+    borderRadius: 2,
   },
   skillBold: {
-    fontSize: 8.5, fontFamily: 'Helvetica-Bold',
+    fontSize: 7.5, fontFamily: 'Helvetica-Bold',
     color: WHITE, backgroundColor: ACCENT,
-    paddingHorizontal: 6, paddingVertical: 2,
-    borderRadius: 3,
+    paddingHorizontal: 5, paddingVertical: 1.5,
+    borderRadius: 2,
   },
 
   // ── Education ────────────────────────────────────────────
-  eduRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
-  eduDegree: { fontSize: 9.5, fontFamily: 'Helvetica-Bold', color: DARK },
-  eduInstitution: { fontSize: 8.5, color: GRAY, marginTop: 1 },
-  eduYear: { fontSize: 8.5, color: LIGHT_GRAY },
+  eduRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 },
+  eduDegree: { fontSize: 8.5, fontFamily: 'Helvetica-Bold', color: DARK },
+  eduInstitution: { fontSize: 7.5, color: GRAY, marginTop: 0.5 },
+  eduYear: { fontSize: 7.5, color: LIGHT_GRAY },
 
   // ── Certifications ───────────────────────────────────────
-  certRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
-  certName: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: DARK },
-  certMeta: { fontSize: 8, color: LIGHT_GRAY },
+  certRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 },
+  certName: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: DARK },
+  certMeta: { fontSize: 7.5, color: LIGHT_GRAY },
 
   // ── Dynamic sections ─────────────────────────────────────
-  dynamicItem: { flexDirection: 'row', marginBottom: 3 },
-  dynamicDot: { fontSize: 9, color: ACCENT, marginRight: 5 },
-  dynamicText: { fontSize: 9, color: GRAY, flex: 1, lineHeight: 1.5 },
-  dynamicTitle: { fontSize: 9.5, fontFamily: 'Helvetica-Bold', color: DARK, marginBottom: 1 },
-  dynamicMeta: { fontSize: 8, color: LIGHT_GRAY, marginBottom: 2 },
+  dynamicItem: { flexDirection: 'row', marginBottom: 2 },
+  dynamicDot: { fontSize: 8, color: ACCENT, marginRight: 4 },
+  dynamicText: { fontSize: 8, color: GRAY, flex: 1, lineHeight: 1.3 },
+  dynamicTitle: { fontSize: 8.5, fontFamily: 'Helvetica-Bold', color: DARK, marginBottom: 0.5 },
+  dynamicMeta: { fontSize: 7.5, color: LIGHT_GRAY, marginBottom: 1.5 },
 });
 
 // Bold matched keywords inside any text
-const BoldText = ({ text, keywords, style }: { text: string; keywords: string[]; style?: object }) => {
+const BoldText = ({ text, keywords, style }: { text: string; keywords: string[]; style?: any }) => {
   if (!keywords.length || !text) return <Text style={style || s.bulletText}>{text}</Text>;
   const escaped = keywords.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
   const regex = new RegExp(`(${escaped.join('|')})`, 'gi');
